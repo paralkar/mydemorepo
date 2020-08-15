@@ -1,0 +1,608 @@
+﻿cat /etc/yum.conf
+sslverify=false
+
+sudo yum install -y yum-utils   device-mapper-persistent-data   lvm2
+sudo yum-config-manager     --add-repo     https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install docker-ce docker-ce-cli containerd.io
+
+
+[root@test ~]# systemctl status docker.service
+● docker.service - Docker Application Container Engine
+   Loaded: loaded (/usr/lib/systemd/system/docker.service; disabled; vendor preset: disabled)
+   Active: active (running) since Sat 2020-01-18 17:42:30 IST; 14s ago
+     Docs: https://docs.docker.com
+ Main PID: 5539 (dockerd)
+    Tasks: 8
+   Memory: 119.3M
+   CGroup: /system.slice/docker.service
+           └─5539 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+
+Jan 18 17:42:26 test.example.com dockerd[5539]: time="2020-01-18T17:42:26.968769798+05:30" level=info msg="scheme \"unix\" not registered, fallback to de...dule=grpc
+Jan 18 17:42:26 test.example.com dockerd[5539]: time="2020-01-18T17:42:26.968785300+05:30" level=info msg="ccResolverWrapper: sending update to cc: {[{un...dule=grpc
+Jan 18 17:42:26 test.example.com dockerd[5539]: time="2020-01-18T17:42:26.968793815+05:30" level=info msg="ClientConn switching balancer to \"pick_first\...dule=grpc
+Jan 18 17:42:27 test.example.com dockerd[5539]: time="2020-01-18T17:42:27.230961888+05:30" level=info msg="Loading containers: start."
+Jan 18 17:42:28 test.example.com dockerd[5539]: time="2020-01-18T17:42:28.282548131+05:30" level=info msg="Default bridge (docker0) is assigned with an I... address"
+Jan 18 17:42:29 test.example.com dockerd[5539]: time="2020-01-18T17:42:29.084213827+05:30" level=info msg="Loading containers: done."
+Jan 18 17:42:29 test.example.com dockerd[5539]: time="2020-01-18T17:42:29.682168304+05:30" level=info msg="Docker daemon" commit=633a0ea graphdriver(s)=o...n=19.03.5
+Jan 18 17:42:29 test.example.com dockerd[5539]: time="2020-01-18T17:42:29.682241584+05:30" level=info msg="Daemon has completed initialization"
+Jan 18 17:42:30 test.example.com systemd[1]: Started Docker Application Container Engine.
+Jan 18 17:42:30 test.example.com dockerd[5539]: time="2020-01-18T17:42:30.062722209+05:30" level=info msg="API listen on /var/run/docker.sock"
+Hint: Some lines were ellipsized, use -l to show in full.
+
+
+
+[root@test ~]# docker info | more
+Client:
+ Debug Mode: false
+
+Server:
+ Containers: 0
+  Running: 0
+  Paused: 0
+  Stopped: 0
+ Images: 0
+ Server Version: 19.03.5
+ Storage Driver: overlay2
+  Backing Filesystem: xfs
+  Supports d_type: true
+  Native Overlay Diff: true
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local logentries splunk syslog
+ Swarm: inactive
+ Runtimes: runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: b34a5c8af56e510852c35414db4c1f4fa6172339
+ runc version: 3e425f80a8c931f88e6d94a8c831b9d5aa481657
+ init version: fec3683
+ Security Options:
+  seccomp
+   Profile: default
+ Kernel Version: 3.10.0-957.el7.x86_64
+ Operating System: CentOS Linux 7 (Core)
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 1
+ Total Memory: 991.2MiB
+ Name: test.example.com
+[root@test ~]# docker version | more
+Client: Docker Engine - Community
+ Version:           19.03.5
+ API version:       1.40
+ Go version:        go1.12.12
+ Git commit:        633a0ea
+ Built:             Wed Nov 13 07:25:41 2019
+ OS/Arch:           linux/amd64
+ Experimental:      false
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          19.03.5
+  API version:      1.40 (minimum version 1.12)
+  Go version:       go1.12.12
+  Git commit:       633a0ea
+  Built:            Wed Nov 13 07:24:18 2019
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.2.10
+  GitCommit:        b34a5c8af56e510852c35414db4c1f4fa6172339
+ runc:
+  Version:          1.0.0-rc8+dev
+  GitCommit:        3e425f80a8c931f88e6d94a8c831b9d5aa481657
+ docker-init:
+  Version:          0.18.0
+  GitCommit:        fec3683
+[root@test ~]#
+
+######################################################################################################################################################
+Create a first container, list container, remove container
+######################################################################################################################################################
+
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+
+[root@test ~]# docker container run ubuntu sleep 30
+
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+fa3f8ecedfa4        ubuntu              "sleep 30"          15 seconds ago      Up 5 seconds                            nifty_roentgen
+
+[root@test ~]# docker container ls -a
+CONTAINER ID        IMAGE               COMMAND             CREATED              STATUS                     PORTS               NAMES
+a1496be8423d        ubuntu              "sudo ssh"          About a minute ago   Created                                        fervent_hugle
+bd8c3ad855a2        ubuntu              "ssh"               About a minute ago   Created                                        priceless_chatelet
+fa3f8ecedfa4        ubuntu              "sleep 30"          2 minutes ago        Exited (0) 2 minutes ago                       nifty_roentgen
+d612204d4ba8        ubuntu              "sleep 30"          3 minutes ago        Exited (0) 2 minutes ago                       festive_shaw
+8791e1144cb9        ubuntu              "uptime"            6 minutes ago        Exited (0) 5 minutes ago                       modest_blackwell
+
+[root@test ~]# docker container run nginx
+Unable to find image 'nginx:latest' locally
+latest: Pulling from library/nginx
+8ec398bc0356: Pull complete
+a53c868fbde7: Pull complete
+79daf9dd140d: Pull complete
+Digest: sha256:70821e443be75ea38bdf52a974fd2271babd5875b2b1964f05025981c75a6717
+Status: Downloaded newer image for nginx:latest
+
+[root@test ~]# docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+nginx               latest              5ad3bd0e67a9        10 days ago         127MB
+ubuntu              latest              ccc6e87d482b        2 weeks ago         64.2MB
+
+[root@test ~]# docker container rm a1496be8423d
+a1496be8423d
+
+######################################################################################################################################################
+create a container in background, stop,start,detach container,
+######################################################################################################################################################
+
+[root@test ~]# docker container stop 05c0fe3b2374
+05c0fe3b2374
+
+[root@test ~]# docker container start 05c0fe3b2374
+05c0fe3b2374
+
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND             CREATED              STATUS              PORTS               NAMES
+05c0fe3b2374        ubuntu              "sleep 30"          About a minute ago   Up 4 seconds                            pensive_nash
+
+[root@test ~]# docker container run -d ubuntu sleep 30
+565ebec8c3a2a92b08c595f5850bd0d72e63e96aa9c258f5c7d0d2342d40c6ca
+
+root@02683f945b99:/# hostname
+02683f945b99
+root@02683f945b99:/# df -PTh
+Filesystem              Type     Size  Used Avail Use% Mounted on
+overlay                 overlay  6.2G  4.7G  1.6G  76% /
+tmpfs                   tmpfs     64M     0   64M   0% /dev
+tmpfs                   tmpfs    496M     0  496M   0% /sys/fs/cgroup
+shm                     tmpfs     64M     0   64M   0% /dev/shm
+/dev/mapper/centos-root xfs      6.2G  4.7G  1.6G  76% /etc/hosts
+tmpfs                   tmpfs    496M     0  496M   0% /proc/asound
+tmpfs                   tmpfs    496M     0  496M   0% /proc/acpi
+tmpfs                   tmpfs    496M     0  496M   0% /proc/scsi
+tmpfs                   tmpfs    496M     0  496M   0% /sys/firmware
+
+   18  apt-get update
+   19  apt install iproute2
+   20  ip a l
+
+
+ctrl+p+q --- exit command --if you want to container running in bg 
+
+[root@test ~]# docker container rm $(docker container ls -aq)
+
+
+######################################################################################################################################################
+docker container inspect
+######################################################################################################################################################
+
+[root@test ~]# docker container inspect 566a3e6ae5ec
+[
+    {
+        "Id": "566a3e6ae5ec315754c7000ec7308703fb2b86b9042128c87bf4a7a991024b0f",
+        "Created": "2020-02-01T05:43:21.193886458Z",
+        "Path": "nginx",
+        "Args": [
+            "-g",
+            "daemon off;"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 9408,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2020-02-01T05:43:23.922507892Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+
+To search for IP
+
+######################################################################################################################################################
+what's going on inside container
+######################################################################################################################################################
+
+
+6: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
+    link/ether 02:42:22:be:cc:2d brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:22ff:febe:cc2d/64 scope link
+       valid_lft forever preferred_lft forever
+
+
+[root@test ~]# docker container logs 566a3e6ae5ec
+172.17.0.1 - - [01/Feb/2020:05:52:27 +0000] "GET / HTTP/1.1" 200 612 "-" "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0" "-"
+2020/02/01 05:52:27 [error] 6#6: *1 open() "/usr/share/nginx/html/favicon.ico" failed (2: No such file or directory), client: 172.17.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "172.17.0.2"
+172.17.0.1 - - [01/Feb/2020:05:52:27 +0000] "GET /favicon.ico HTTP/1.1" 404 153 "-" "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0" "-"
+2020/02/01 05:52:27 [error] 6#6: *1 open() "/usr/share/nginx/html/favicon.ico" failed (2: No such file or directory), client: 172.17.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "172.17.0.2"
+172.17.0.1 - - [01/Feb/2020:05:52:27 +0000] "GET /favicon.ico HTTP/1.1" 404 153 "-" "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0" "-"
+
+Note : Container is not VM lets proof it 
+
+[root@test ~]# docker container top 566
+UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
+root                9408                9392                0                   11:13               ?                   00:00:00            nginx: master process nginx -g daemon off;
+101                 9447                9408                0                   11:13               ?                   00:00:00            nginx: worker process
+[root@test ~]# ps -aux | grep 9408 9447
+grep: 9447: No such file or directory
+[root@test ~]# ps -aux | grep 9408
+root      9408  0.0  0.0  10620   832 ?        Ss   11:13   0:00 nginx: master process nginx -g daemon off;
+root     10669  0.0  0.0 112708   976 pts/1    R+   11:34   0:00 grep --color=auto 9408
+
+[root@test ~]# docker container stats
+CONTAINER ID        NAME                          CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
+566a3e6ae5ec        condescending_chandrasekhar   0.00%               1.398MiB / 991.2MiB   0.14%               3.13kB / 3.02kB     23.2MB / 0B         2
+
+######################################################################################################################################################
+Docker port mapping, rename container, restart container, exec container
+######################################################################################################################################################
+
+ enp0s8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:ca:00:37 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.10/24 brd 192.168.1.255 scope global noprefixroute dynamic enp0s8
+       valid_lft 75158sec preferred_lft 75158sec
+    inet6 fe80::b315:d34:c6b3:20e5/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+
+docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
+    link/ether 02:42:22:be:cc:2d brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:22ff:febe:cc2d/64 scope link
+       valid_lft forever preferred_lft forever
+
+Any request on port 192.168.1.10:3600 forward to --> 172.17.0.2:80
+
+[root@test ~]# docker container run -d -p 3600:80 --name test_ngnix nginx
+6d888b6edb1a4d188a0f07e47bb6d6b2feda67e8e330252787a48056c7315c4d
+
+[root@test ~]# netstat -tunlp | grep 3600
+tcp6       0      0 :::3600                 :::*                    LISTEN      12028/docker-proxy
+
+[root@test ~]# ps -aux | grep 12028
+root     12028  0.0  0.1 208728  1856 ?        Sl   12:54   0:00 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 3600 -container-ip 172.17.0.2 -container-port 80
+
+
+check with http://192.168.1.10:3600/
+
+[root@test ~]# docker container exec -it 6d888b6edb1a /bin/bash
+
+[root@test ~]# docker container list
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   15 minutes ago      Up 15 minutes       0.0.0.0:3600->80/tcp   test_ngnix
+[root@test ~]# docker container rename test_ngnix tiger_ngnix
+[root@test ~]# docker container list
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   15 minutes ago      Up 15 minutes       0.0.0.0:3600->80/tcp   tiger_ngnix
+
+Restart 
+
+[root@test ~]# docker container list
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   17 minutes ago      Up 17 minutes       0.0.0.0:3600->80/tcp   tiger_ngnix
+[root@test ~]# docker container restart tiger
+Error response from daemon: No such container: tiger
+[root@test ~]# docker container restart 6d
+6d
+[root@test ~]# docker container list
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   18 minutes ago      Up 5 seconds        0.0.0.0:3600->80/tcp   tiger_ngnix
+
+######################################################################################################################################################
+Attach to running container, kill, wait, pause, unpause, prune, port
+######################################################################################################################################################
+
+[root@test ~]# docker container run -itd ubuntu
+68f8f4946c940117cfe90f115ca807508415aaf3811c0465da61110cc28e8587
+
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+68f8f4946c94        ubuntu              "/bin/bash"              11 seconds ago      Up 9 seconds                               recursing_kilby
+343fa807e6e3        nginx               "nginx -g 'daemon of…"   45 seconds ago      Up 41 seconds       80/tcp                 adoring_jepsen
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   51 minutes ago      Up 33 minutes       0.0.0.0:3600->80/tcp   tiger_ngnix
+
+### attach ###
+
+[root@test ~]# docker container attach 68f8
+
+
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+343fa807e6e3        nginx               "nginx -g 'daemon of…"   2 minutes ago       Up 2 minutes        80/tcp                 adoring_jepsen
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   53 minutes ago      Up 35 minutes       0.0.0.0:3600->80/tcp   tiger_ngnix
+
+### Kill ###
+
+[root@test ~]# docker container kill 343fa807e6e3
+343fa807e6e3
+
+### wait ###
+
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+fc887a3c8101        ubuntu              "/bin/bash"              22 seconds ago      Up 20 seconds                              relaxed_thompson
+fc7d5c7beac0        nginx               "nginx -g 'daemon of…"   12 minutes ago      Up 12 minutes       80/tcp                 awesome_benz
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   20 hours ago        Up 11 minutes       0.0.0.0:3600->80/tcp   tiger_ngnix
+[root@test ~]# docker container wait fc887a3c8101
+0
+
+[root@test ~]# docker container stop fc887a3c8101
+fc887a3c8101
+
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+fc7d5c7beac0        nginx               "nginx -g 'daemon of…"   13 minutes ago      Up 13 minutes       80/tcp                 awesome_benz
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   20 hours ago        Up 12 minutes       0.0.0.0:3600->80/tcp   tiger_ngnix
+
+### Pause ###
+
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+df9b38c35592        ubuntu              "/bin/bash"              7 seconds ago       Up 5 seconds                               jolly_heisenberg
+fc7d5c7beac0        nginx               "nginx -g 'daemon of…"   14 minutes ago      Up 14 minutes       80/tcp                 awesome_benz
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   20 hours ago        Up 13 minutes       0.0.0.0:3600->80/tcp   tiger_ngnix
+[root@test ~]# docker container pause df9b38c35592
+df9b38c35592
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                   PORTS                  NAMES
+df9b38c35592        ubuntu              "/bin/bash"              27 seconds ago      Up 25 seconds (Paused)                          jolly_heisenberg
+fc7d5c7beac0        nginx               "nginx -g 'daemon of…"   14 minutes ago      Up 14 minutes            80/tcp                 awesome_benz
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   20 hours ago        Up 13 minutes            0.0.0.0:3600->80/tcp   tiger_ngnix
+
+### unpause ###
+
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                   PORTS                  NAMES
+df9b38c35592        ubuntu              "/bin/bash"              27 seconds ago      Up 25 seconds (Paused)                          jolly_heisenberg
+fc7d5c7beac0        nginx               "nginx -g 'daemon of…"   14 minutes ago      Up 14 minutes            80/tcp                 awesome_benz
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   20 hours ago        Up 13 minutes            0.0.0.0:3600->80/tcp   tiger_ngnix
+[root@test ~]# docker container unpause df9b38c35592
+df9b38c35592
+(reverse-i-search)`;': ping goog;e.com
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+df9b38c35592        ubuntu              "/bin/bash"              6 minutes ago       Up 6 minutes                               jolly_heisenberg
+fc7d5c7beac0        nginx               "nginx -g 'daemon of…"   20 minutes ago      Up 20 minutes       80/tcp                 awesome_benz
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   20 hours ago        Up 19 minutes       0.0.0.0:3600->80/tcp   tiger_ngnix
+
+### prune ###
+
+[root@test ~]# docker container ls -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                      PORTS                  NAMES
+df9b38c35592        ubuntu              "/bin/bash"              9 minutes ago       Up 9 minutes                                       jolly_heisenberg
+fc887a3c8101        ubuntu              "/bin/bash"              11 minutes ago      Exited (0) 10 minutes ago                          relaxed_thompson
+3d65c51e127a        ubuntu              "/bin/bash"              21 minutes ago      Exited (0) 11 minutes ago                          elated_bouman
+fc7d5c7beac0        nginx               "nginx -g 'daemon of…"   23 minutes ago      Up 23 minutes               80/tcp                 awesome_benz
+6b297b364114        ubuntu              "/bin/bash"              23 minutes ago      Exited (0) 22 minutes ago                          zen_austin
+68f8f4946c94        ubuntu              "/bin/bash"              19 hours ago        Exited (0) 19 hours ago                            recursing_kilby
+343fa807e6e3        nginx               "nginx -g 'daemon of…"   19 hours ago        Exited (137) 19 hours ago                          adoring_jepsen
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   20 hours ago        Up 22 minutes               0.0.0.0:3600->80/tcp   tiger_ngnix
+566a3e6ae5ec        nginx               "nginx -g 'daemon of…"   22 hours ago        Exited (0) 20 hours ago                            condescending_chandrasekhar
+[root@test ~]# docker container prune
+WARNING! This will remove all stopped containers.
+Are you sure you want to continue? [y/N] y
+Deleted Containers:
+fc887a3c8101cfa3e60f8789098b01e79bd45c189a74058b63e433351f5395c6
+3d65c51e127ac6ad84c4e57674a2af6d638f53376f17c03d4389ff9595ce73ce
+6b297b364114b65d0a6339d167605d03b84243277ff46eb104efdbde428a7a31
+68f8f4946c940117cfe90f115ca807508415aaf3811c0465da61110cc28e8587
+343fa807e6e3ff34a5d5c4046053b7f85445589337bf05bf3c1a12253004b5c5
+566a3e6ae5ec315754c7000ec7308703fb2b86b9042128c87bf4a7a991024b0f
+
+Total reclaimed space: 30.81MB
+[root@test ~]# docker container ls -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+df9b38c35592        ubuntu              "/bin/bash"              9 minutes ago       Up 9 minutes                               jolly_heisenberg
+fc7d5c7beac0        nginx               "nginx -g 'daemon of…"   23 minutes ago      Up 23 minutes       80/tcp                 awesome_benz
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   20 hours ago        Up 22 minutes       0.0.0.0:3600->80/tcp   tiger_ngnix
+
+### port ###
+
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+df9b38c35592        ubuntu              "/bin/bash"              10 minutes ago      Up 10 minutes                              jolly_heisenberg
+fc7d5c7beac0        nginx               "nginx -g 'daemon of…"   25 minutes ago      Up 25 minutes       80/tcp                 awesome_benz
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   20 hours ago        Up 24 minutes       0.0.0.0:3600->80/tcp   tiger_ngnix
+[root@test ~]# docker container port tiger_ngnix
+80/tcp -> 0.0.0.0:3600
+
+######################################################################################################################################################
+create docker container, diff docker container and copy file into container
+######################################################################################################################################################
+
+[root@test ~]# docker container create ubuntu sleep 10
+f55715825b6e734098e9df48f8be047faabd3a221d9a73bd0ac0a2a9b49485cd
+
+[root@test ~]# docker container ls -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+f55715825b6e        ubuntu              "sleep 10"               27 seconds ago      Created                                    admiring_ellis
+df9b38c35592        ubuntu              "/bin/bash"              3 hours ago         Up 3 hours                                 jolly_heisenberg
+fc7d5c7beac0        nginx               "nginx -g 'daemon of…"   3 hours ago         Up 3 hours          80/tcp                 awesome_benz
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   23 hours ago        Up 3 hours          0.0.0.0:3600->80/tcp   tiger_ngnix
+
+
+[root@test ~]# docker container diff fc7d5c7beac0
+C /run
+A /run/nginx.pid
+C /var
+C /var/cache
+C /var/cache/nginx
+A /var/cache/nginx/client_temp
+A /var/cache/nginx/fastcgi_temp
+A /var/cache/nginx/proxy_temp
+A /var/cache/nginx/scgi_temp
+A /var/cache/nginx/uwsgi_temp
+
+
+c - create 
+A - Add
+D - delete
+
+
+check how files are created 
+
+
+
+[root@test ~]# docker container run -it  ubuntu /bin/bash
+root@410fd04833cf:/# apt update
+Get:1 http://security.ubuntu.com/ubuntu bionic-security InRelease [88.7 kB]
+Get:2 http://archive.ubuntu.com/ubuntu bionic InRelease [242 kB]
+Get:3 http://archive.ubuntu.com/ubuntu bionic-updates InRelease [88.7 kB]
+Get:4 http://security.ubuntu.com/ubuntu bionic-security/restricted amd64 Packages [26.1 kB]
+Get:5 http://archive.ubuntu.com/ubuntu bionic-backports InRelease [74.6 kB]
+Get:6 http://security.ubuntu.com/ubuntu bionic-security/universe amd64 Packages [808 kB]
+Get:7 http://archive.ubuntu.com/ubuntu bionic/main amd64 Packages [1344 kB]
+Get:8 http://archive.ubuntu.com/ubuntu bionic/multiverse amd64 Packages [186 kB]
+Get:9 http://archive.ubuntu.com/ubuntu bionic/universe amd64 Packages [11.3 MB]
+Get:10 http://archive.ubuntu.com/ubuntu bionic/restricted amd64 Packages [13.5 kB]
+Get:11 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 Packages [1092 kB]
+Get:12 http://archive.ubuntu.com/ubuntu bionic-updates/universe amd64 Packages [1341 kB]
+Get:13 http://archive.ubuntu.com/ubuntu bionic-updates/restricted amd64 Packages [39.8 kB]
+Get:14 http://archive.ubuntu.com/ubuntu bionic-updates/multiverse amd64 Packages [11.1 kB]
+Get:15 http://archive.ubuntu.com/ubuntu bionic-backports/main amd64 Packages [2496 B]
+Get:16 http://archive.ubuntu.com/ubuntu bionic-backports/universe amd64 Packages [4243 B]
+Get:17 http://security.ubuntu.com/ubuntu bionic-security/main amd64 Packages [797 kB]
+Get:18 http://security.ubuntu.com/ubuntu bionic-security/multiverse amd64 Packages [7061 B]
+Fetched 17.5 MB in 1min 12s (242 kB/s)
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+7 packages can be upgraded. Run 'apt list --upgradable' to see them.
+
+
+On other terminal 
+watch -n 1 'docker container diff 410fd04833cf'
+[root@test ~]# docker container diff 410fd04833cf
+C /var
+C /var/lib
+C /var/lib/apt
+C /var/lib/apt/lists
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic_InRelease
+A /var/lib/apt/lists/auxfiles
+A /var/lib/apt/lists/security.ubuntu.com_ubuntu_dists_bionic-security_InRelease
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic-backports_universe_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic-updates_InRelease
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic-updates_main_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic-updates_multiverse_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic-updates_restricted_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic-updates_universe_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic_multiverse_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/partial
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic-backports_InRelease
+A /var/lib/apt/lists/security.ubuntu.com_ubuntu_dists_bionic-security_main_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic_main_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic_universe_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/security.ubuntu.com_ubuntu_dists_bionic-security_multiverse_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/security.ubuntu.com_ubuntu_dists_bionic-security_universe_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic-backports_main_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/lock
+A /var/lib/apt/lists/security.ubuntu.com_ubuntu_dists_bionic-security_restricted_binary-amd64_Packages.lz4
+A /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_bionic_restricted_binary-amd64_Packages.lz4
+C /var/cache
+C /var/cache/apt
+D /var/cache/apt/srcpkgcache.bin
+D /var/cache/apt/pkgcache.bin
+
+
+######################################################################################################################################################
+Export/Import docker container
+######################################################################################################################################################
+
+[root@test ~]# docker container export 410fd04833cf > my_ubuntu.tgz
+[root@test ~]# docker container export 410fd04833cf -o my_ubuntu1.tgz
+
+or 
+
+[root@test ~]# docker container export 410fd04833cf > my_ubuntu.tar
+[root@test ~]# docker container export 410fd04833cf -o my_ubuntu1.tar
+
+docker image import my_ubuntu1.tgz my_ubuntu1_t_g
+
+docker container run -it my_ubuntu1_t_g /bin/bash
+
+######################################################################################################################################################
+how to create docker image from running container (docker commit)
+######################################################################################################################################################
+
+[root@test ~]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+70f6b8011444        my_ubuntu1_t_g      "/bin/bash"              10 minutes ago      Up 10 minutes                              loving_almeida
+410fd04833cf        ubuntu              "/bin/bash"              33 minutes ago      Up 33 minutes                              objective_rosalind
+df9b38c35592        ubuntu              "/bin/bash"              4 hours ago         Up 4 hours                                 jolly_heisenberg
+fc7d5c7beac0        nginx               "nginx -g 'daemon of…"   4 hours ago         Up 4 hours          80/tcp                 awesome_benz
+6d888b6edb1a        nginx               "nginx -g 'daemon of…"   24 hours ago        Up 4 hours          0.0.0.0:3600->80/tcp   tiger_ngnix
+[root@test ~]# docker container attach 70f6b8011444
+root@70f6b8011444:/# history
+    1  apt list git
+    2  clear
+    3  which git
+    4  which tree
+    5  history
+root@70f6b8011444:/# cd /tmp/
+root@70f6b8011444:/tmp# touch 1 2 3 4 5 6 7 8 9 0
+root@70f6b8011444:/tmp# ll
+total 0
+drwxrwxrwt 1 root root 96 Feb  2 07:06 ./
+drwxr-xr-x 1 root root 17 Feb  2 06:55 ../
+-rw-r--r-- 1 root root  0 Feb  2 07:06 0
+-rw-r--r-- 1 root root  0 Feb  2 07:06 1
+-rw-r--r-- 1 root root  0 Feb  2 07:06 2
+-rw-r--r-- 1 root root  0 Feb  2 07:06 3
+-rw-r--r-- 1 root root  0 Feb  2 07:06 4
+-rw-r--r-- 1 root root  0 Feb  2 07:06 5
+-rw-r--r-- 1 root root  0 Feb  2 07:06 6
+-rw-r--r-- 1 root root  0 Feb  2 07:06 7
+-rw-r--r-- 1 root root  0 Feb  2 07:06 8
+-rw-r--r-- 1 root root  0 Feb  2 07:06 9
+root@70f6b8011444:/tmp# read escape sequence
+
+
+[root@test ~]# docker container commit --author "Anish Paralkar" -m "This test image" 70f6 my_test_image
+sha256:6660c1033b4de20746c061c6fd89d2f1f85bc0b40b6d641da0e01318d17edddf
+
+######################################################################################################################################################
+How to inspect remove,inspect, list and history for the docker image
+######################################################################################################################################################
+
+change format in image same to be used for containers
+
+[root@test ~]# docker image ls --format '{{.ID}}','{{.Repository}}'
+6660c1033b4d,my_test_image
+456c6a131a01,my_ubuntu1_t_g
+5ad3bd0e67a9,nginx
+ccc6e87d482b,ubuntu
+
+[root@test ~]# docker history my_test_image:latest
+IMAGE               CREATED             CREATED BY          SIZE                COMMENT
+6660c1033b4d        2 weeks ago         /bin/bash           0B                  This test image
+456c6a131a01        2 weeks ago                             187MB               Imported from -
+
+[root@test ~]# docker image rm -f 5ad3bd0e67a9
+Untagged: nginx:latest
+Untagged: nginx@sha256:70821e443be75ea38bdf52a974fd2271babd5875b2b1964f05025981c75a6717
+Deleted: sha256:5ad3bd0e67a9c542210a21a3c72f56ef6387cf9b7f4c2506d2398d55a2593ed0
+
+[root@test ~]# docker image inspect my_test_image
+
+#docker image prune ---> delete all used image 
+
+######################################################################################################################################################
+15 Docker (in hindi ) Docker save/docker load. Diff between export and save & load &import
+######################################################################################################################################################
+
+space issue try later 
+
+######################################################################################################################################################
+Layered Architecture and Dockerfiles
+######################################################################################################################################################
+
